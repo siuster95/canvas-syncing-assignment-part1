@@ -1,13 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="https://npmcdn.com/babel-core@5.8.38/browser.min.js"></script>
-    <script type="text/babel" >
+        <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+    <script type="text/babel">
         "use strict";
-    
+
+        let socket;
+
+        let span;
+
+        let updatescore = 10
+        
+        let totalscore = 0;
+        
+
+        const updateScore = () => {
+          
+            //send a emit to server
+            socket.emit('updateScore',updatescore);
+        };
+
+        const updateClientscore = (data) => {
+             totalscore = data;
+             span.innerHTML = totalscore;
+        };
+
+        const init = () => {
+            //grab span so we can put things there 
+            span = document.querySelector("#totalscore");
+            
+            //connects to server
+            socket = io.connect();
+            
+            //when we do successfully connect
+            socket.on('connect',() => {
+                setInterval(updateScore, 1000);
+            });
+            
+            socket.on('updateClient', updateClientscore);
+        }
+        
+        window.onload = init;
     </script>
 </head>
 <body>
-
+    <p>The total score on total is: <span id="totalscore"></span></p>
 </body>
 </html>
